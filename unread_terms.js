@@ -1,5 +1,6 @@
 /**
- * Visualization of Terms of Service. 
+ * Visualization of Terms of Service and Privacy Policy.
+ * How many pages of terms we do not read? 
  * 
  * @author lucyia (ping@lucyia.com)
  */
@@ -14,31 +15,79 @@
 	 */
 	function data2vis(pages) {
 
+		var terms = typePagesPromise(pages, 'terms');	
+		promise2visualize(terms, 'terms');
 
+		var privacy = typePagesPromise(pages, 'privacy');
+		promise2visualize(privacy, 'privacy');
 
-		var termsPromises = pages.map(d => pagesContent(d.url_terms, 'html'));
+		/**
+		 * Calculates how long the content of given pages are.
+		 *
+		 * @param {array} of url pages
+		 * @param {string} of url type ('terms' or 'privacy' - determined in input data)
+		 * @return {Promise}
+		 */
+		function typePagesPromise(pages, type){
+			var typePromises = pages.map(d => pagesContent(d['url_'+type]));
 
-		Promise.all(termsPromises).then(
-			function(response){ 
-				var pages = response.map(d => Math.round(numberOfPages(d)));
-				//visualize(pages);
-		}, function(error) {
-				errorMssg(error, true);
-		});
+			return Promise.all(typePromises).then(function(response){ 
+					return pages = response.map(d => Math.round(numberOfPages(d)));
+				}, function(error) {
+					errorMssg(error, true);
+				});
 
-		function pagesContent(page, table){
-			// when 'xml' is passed as a 'table' var, some pages return the correct output
-			return $.get('http://query.yahooapis.com/v1/public/yql?q=select%20*%20from%20'+table+'%20where%20url%3D%27'+encodeURIComponent(page)+'%27&format=xml', 
-				function (response, status) {					
-					return response;
-			});
+			/**
+			 * Gets the whole html for a given page by using YQL service.
+			 *
+			 * @param {string} representing url of a page
+			 * @param {string} describing a table in YQL query
+			 * @return {Promise} with the content of a page
+			 */
+			function pagesContent(page, table){
+				// when 'xml' is passed as a 'table' var, some pages return the correct output
+				// but 'html' as 'table' var works for most cases, so it set as default
+				var table = table || 'html';
+				return $.get('http://query.yahooapis.com/v1/public/yql?q=select%20*%20from%20'+table+'%20where%20url%3D%27'+encodeURIComponent(page)+'%27&format=xml', 
+					function (response, status) {
+						return response;
+				});
+			}
+
+			/**
+			 * Calculates number of standard pages for given page (all html tags ignored).
+			 *
+			 * @param {string} content of a web page
+			 * @return {number} of standard pages (3000 characters per page)
+			 */
+			function numberOfPages(page) {
+				return $(page).text().length/3000;
+			}
 		}
 
-		function pagesContentFallback(pages) {
-			return $.embedly.extract(pages, {
-					format: 'json',
-					key: 'your embed.ly key'
+		/**
+		 * Turns response from promise into visualization of a bar chart.
+		 *
+		 * @param {Promise} 
+		 * @param {string} of url type ('terms' or 'privacy' - determined in input data)
+		 */
+		function promise2visualize(promise, type){
+			promise.then(function(response){
+					visualize(response, type);
+				}, function(error){
+					errorMssg(error, true);
 				});
+
+			/**
+			 * Visualizes given numbers in a bar chart according to the given type.
+			 * 'Terms' type is shown in the positive y axis and 'privacy' type the other way.
+			 *
+			 * @param {array} of numbers representing how long the content of web pages have
+			 * @param {string} of url type ('terms' or 'privacy' - determined in input data)
+			 */
+			function visualize(pagesCount, type){
+				console.log(pagesCount, type)
+			}
 		}
 
 		/**
@@ -49,16 +98,6 @@
 		 */
 		function errorMssg(mssg, show) {
 			console.log(mssg);
-		}
-
-		/**
-		 * Calculates number of standard pages for given page (all html tags ignored).
-		 *
-		 * @param {string} content of a web page
-		 * @return {number} of standard pages (3000 characters per page)
-		 */
-		function numberOfPages(page) {
-			return $(page).text().length/3000;
 		}
 	}
 

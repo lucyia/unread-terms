@@ -73,21 +73,10 @@
 		 */
 		function promise2visualize(promise, type){
 			promise.then(function(response){
-					visualize(response, type);
+					visualizePages(response, type);
 				}, function(error){
 					errorMssg(error, true);
 				});
-
-			/**
-			 * Visualizes given numbers in a bar chart according to the given type.
-			 * 'Terms' type is shown in the positive y axis and 'privacy' type the other way.
-			 *
-			 * @param {array} of numbers representing how long the content of web pages have
-			 * @param {string} of url type ('terms' or 'privacy' - determined in input data)
-			 */
-			function visualize(pagesCount, type){
-				console.log(pagesCount, type)
-			}
 		}
 
 		/**
@@ -101,44 +90,100 @@
 		}
 	}
 
+	/**
+	 * Sets up a panel for visualization and add icons of given web pages into it.
+	 * The bar charts are generated after the content of the pages were parsed.
+	 * 
+	 * @param {array} of objects
+	 * @param {string} element which height and width will visualization inherit
+	 */
+	function setVis(pages, element){
+		var margin = { top: 25, right: 25, bottom: 30, left: 25};
+		var width = $('#vis').width() - margin.left - margin.right;
+		var height = $('#vis').height() - margin.top - margin.bottom;
+
+		var svg = d3.select('#vis')
+			.append('svg')
+				.attr('width', width)
+				.attr('height', height)
+				.style('border', '1px solid lightgrey')
+			.append('g')
+				.attr('class', 'svg-wrapper')
+				.attr('transform', 'translate('+ margin.left +','+ margin.top +')');
+
+		var x = 40; // x + a
+		var y = 60; // y - b
+		
+		// generate the icons
+		var icons = svg.selectAll('.icons')
+			.data(pages)
+			.enter()
+			.append('svg:image')
+			.attr('class', 'icons')
+			.attr('xlink:href', d => d.url_image )
+			.attr('x', (d, i) => i*70 )
+			.attr('y', (d, i) => 100 )
+			.attr('width', 40 )
+			.attr('height', 40 );
+
+	}
+
+	/**
+	 * Visualizes given numbers in a bar chart according to the given type.
+	 * 'Terms' type is shown in the positive y axis and 'privacy' type the other way.
+	 *
+	 * @param {array} of numbers representing how long the content of web pages have
+	 * @param {string} of url type ('terms' or 'privacy' - determined in input data)
+	 */
+	function visualizePages(pagesCount, type){
+		// get the already created svg
+		var svg = d3.select('svg').select('.svg-wrapper');
+				
+	}
+
+	// array of objects with url links to various services
 	var pages = [
 		{	name: 'Facebook', 
-			url_image: 'https://cdn0.iconfinder.com/data/icons/social-network-9/50/3-128.png', 
+			url_image: 'https://cdn4.iconfinder.com/data/icons/miu-square-shadow-social/60/facebook-square-shadow-social-media-128.png', 
 			url_terms: 'https://www.facebook.com/terms', 
 			url_privacy: 'https://www.facebook.com/full_data_use_policy'
 		},
 		{
 			name: 'LinkedIn', 
-			url_image: 'https://cdn0.iconfinder.com/data/icons/social-network-9/50/9-128.png', 
+			url_image: 'https://cdn4.iconfinder.com/data/icons/miu-square-shadow-social/60/linkedin-square-shadow-social-media-128.png', 
 			url_terms: 'https://www.linkedin.com/legal/user-agreement', 
 			url_privacy: 'https://www.linkedin.com/legal/privacy-policy?trk=hb_ft_priv'
 		},
 		{
 			name: 'Twitter', 
-			url_image: 'https://cdn0.iconfinder.com/data/icons/social-network-9/50/4-128.png', 
+			url_image: 'https://cdn4.iconfinder.com/data/icons/miu-square-shadow-social/60/twitter-square-shadow-social-media-128.png', 
 			url_terms: 'https://twitter.com/tos', 
 			url_privacy: 'https://twitter.com/privacy'
 		},
 		{
 			name: 'Tumblr', 
-			url_image: 'https://cdn0.iconfinder.com/data/icons/social-network-9/50/36-128.png', 
+			url_image: 'https://cdn4.iconfinder.com/data/icons/miu-square-shadow-social/60/tumblr-square-shadow-social-media-128.png', 
 			url_terms: 'https://www.tumblr.com/policy/en/terms-of-service', 
 			url_privacy: 'https://www.tumblr.com/policy/en/privacy'
 		},
 		{
 			name: 'Instagram', 
-			url_image: 'https://cdn0.iconfinder.com/data/icons/social-network-9/50/5-128.png', 
+			url_image: 'https://cdn4.iconfinder.com/data/icons/miu-square-shadow-social/60/instagram-square-shadow-social-media-128.png', 
 			url_terms: 'https://www.instagram.com/about/legal/terms', 
 			url_privacy: 'https://www.instagram.com/about/legal/privacy/'
 		},
 		{
 			name: 'Google', 
-			url_image: 'https://cdn0.iconfinder.com/data/icons/social-network-9/50/2-128.png', 
+			url_image: 'https://cdn4.iconfinder.com/data/icons/miu-square-shadow-social/60/google_plus-square-shadow-social-media-128.png', 
 			url_terms: 'https://www.google.com/policies/terms', 
 			url_privacy: 'https://www.google.com/policies/privacy/'
 		}
 	];
 
 	data2vis(pages);
+
+	$(document).ready(function () {
+		setVis(pages, '#vis');
+	});	
 	
 })(this, document);

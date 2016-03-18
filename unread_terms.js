@@ -138,7 +138,23 @@
 	function visualizePages(pagesCount, type){
 		// get the already created svg
 		var svg = d3.select('svg').select('.svg-wrapper');
-				
+
+		drawDocumentIcon();
+		
+		function drawDocumentIcon(count) {
+			// icon of a document
+			svg.selectAll('.'+type+'.fileIcons')
+				.data(d3.range(count))
+				.enter()
+				.append('svg:image')
+				.attr('class', 'fileIcons '+type)
+				.attr('xlink:href', 'https://cdn1.iconfinder.com/data/icons/hawcons/32/699044-icon-55-document-text-128.png' )
+				.attr('x', (d, i) => i*70 )
+				.attr('y', (d, i) => i*10 )
+				.attr('width', 50 )
+				.attr('height', 100 )
+				//.style('transform', 'translate('+ x +'px, '+ y +'px)');
+		}
 	}
 
 	// array of objects with url links to various services

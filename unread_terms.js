@@ -108,11 +108,15 @@
 				.attr('height', height)
 				.style('border', '1px solid lightgrey')
 			.append('g')
-				.attr('class', 'svg-wrapper')
-				.attr('transform', 'translate('+ margin.left +','+ margin.top +')');
+				.attr('class', 'svg-wrapper');
+				//.attr('transform', 'translate('+ margin.left +','+ margin.top +')');
+		
+		var barPad = 0.5;
+		var barWidth = 40;
 
-		var x = 40; // x + a
-		var y = 60; // y - b
+		var xScale = d3.scale.ordinal()
+			.domain(pages.map( (d, i) => i*barWidth ))
+			.rangeRoundBands([0, width], barPad);
 		
 		// generate the icons
 		var icons = svg.selectAll('.icons')
@@ -121,10 +125,10 @@
 			.append('svg:image')
 			.attr('class', 'icons')
 			.attr('xlink:href', d => d.url_image )
-			.attr('x', (d, i) => i*70 )
-			.attr('y', (d, i) => 100 )
-			.attr('width', 40 )
-			.attr('height', 40 );
+			.attr('x', (d, i) => xScale(i*barWidth) )
+			.attr('y', height/2 - xScale.rangeBand()/2 )
+			.attr('width', xScale.rangeBand() )
+			.attr('height', xScale.rangeBand() );
 
 	}
 

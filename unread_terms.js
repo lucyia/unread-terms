@@ -143,9 +143,17 @@
 		// get the already created svg
 		var svg = d3.select('svg').select('.svg-wrapper');
 
-		drawDocumentIcon();
+		var barPad = 0.5;
+		var barWidth = 40;
+
+		var xScale = d3.scale.ordinal()
+			.domain(pages.map( (d, i) => i*barWidth ))
+			.rangeRoundBands([0, width], barPad);
+
+		//pagesCount.forEach(count => drawDocIcon(count));
+		drawDocIcon(4);
 		
-		function drawDocumentIcon(count) {
+		function drawDocIcon(count) {
 			// icon of a document
 			svg.selectAll('.'+type+'.fileIcons')
 				.data(d3.range(count))

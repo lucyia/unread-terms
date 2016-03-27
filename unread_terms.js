@@ -13,26 +13,26 @@
 	 *
 	 * @param {array} of objects
 	 */
-	function data2vis(pages) {
+	function data2vis(services, type) {
 
-		var terms = typePagesPromise(pages, 'terms');	
+		var terms = typePagesPromise(services, 'terms');	
 		promise2visualize(terms, 'terms');
 
-		var privacy = typePagesPromise(pages, 'privacy');
+		var privacy = typePagesPromise(services, 'privacy');
 		promise2visualize(privacy, 'privacy');
 
 		/**
-		 * Calculates how long the content of given pages are.
+		 * Calculates how long the content of given services are.
 		 *
-		 * @param {array} of url pages
+		 * @param {array} of url services
 		 * @param {string} of url type ('terms' or 'privacy' - determined in input data)
 		 * @return {Promise}
 		 */
-		function typePagesPromise(pages, type){
-			var typePromises = pages.map(d => pagesContent(d['url_'+type]));
+		function typePagesPromise(services, type){
+			var typePromises = services.map(d => pagesContent(d['url_'+type]));
 
 			return Promise.all(typePromises).then(function(response){ 
-					return pages = response.map(d => numberOfPages(d));
+					return services = response.map(d => numberOfPages(d));
 				}, function(error) {
 					errorMssg(error, true);
 				});
@@ -66,20 +66,6 @@
 		}
 
 		/**
-		 * Turns response from promise into visualization of a bar chart.
-		 *
-		 * @param {Promise} 
-		 * @param {string} of url type ('terms' or 'privacy' - determined in input data)
-		 */
-		function promise2visualize(promise, type){
-			promise.then(function(response){
-					visualizePages(response, type);
-				}, function(error){
-					errorMssg(error, true);
-				});
-		}
-
-		/**
 		 * Shows/Hides message with an error.
 		 * 
 		 * @param {string} message to be displayed
@@ -91,36 +77,37 @@
 	}
 
 	/**
-	 * Sets up a panel for visualization and add icons of given web pages into it.
-	 * The bar charts are generated after the content of the pages were parsed.
+	 * Sets up a panel for visualization and add icons of given web services into it.
 	 * 
 	 * @param {array} of objects
 	 * @param {string} element which height and width will visualization inherit
 	 */
-	function setVis(pages, element){
-		var margin = { top: 25, right: 25, bottom: 30, left: 25};
-		var width = $('#vis').width() - margin.left - margin.right;
-		var height = $('#vis').height() - margin.top - margin.bottom;
+	function setVis(element){
+		margin = { top: 25, right: 25, bottom: 30, left: 25};
+		width = $(element).width() - margin.left - margin.right;
+		height = $(element).height() - margin.top - margin.bottom;
 
-		var svg = d3.select('#vis')
+		svg = d3.select(element)
 			.append('svg')
 				.attr('width', width)
 				.attr('height', height)
 				.style('border', '1px solid lightgrey')
 			.append('g')
 				.attr('class', 'svg-wrapper');
-				//.attr('transform', 'translate('+ margin.left +','+ margin.top +')');
-		
+				//.attr('transform', 'translate('+ margin.left +','+ margin.top +')');		
+	}
+
+	function visServices() {
 		var barPad = 0.5;
 		var barWidth = 40;
 
 		var xScale = d3.scale.ordinal()
-			.domain(pages.map( (d, i) => i*barWidth ))
+			.domain(services.map( (d, i) => i*barWidth ))
 			.rangeRoundBands([0, width], barPad);
 		
 		// generate the icons
 		var icons = svg.selectAll('.icons')
-			.data(pages)
+			.data(services)
 			.enter()
 			.append('svg:image')
 			.attr('class', 'icons')
@@ -129,25 +116,22 @@
 			.attr('y', height/2 - xScale.rangeBand()/2 )
 			.attr('width', xScale.rangeBand() )
 			.attr('height', xScale.rangeBand() );
-
 	}
 
 	/**
 	 * Visualizes given numbers in a bar chart according to the given type.
 	 * 'Terms' type is shown in the positive y axis and 'privacy' type the other way.
 	 *
-	 * @param {array} of numbers representing how long the content of web pages have
+	 * @param {array} of numbers representing how long the content of web services have
 	 * @param {string} of url type ('terms' or 'privacy' - determined in input data)
 	 */
-	function visualizePages(pagesCount, type){
-		// get the already created svg
-		var svg = d3.select('svg').select('.svg-wrapper');
+	function visualizePages(pagesCount, type){	
 
 		var barPad = 0.5;
 		var barWidth = 40;
 
 		var xScale = d3.scale.ordinal()
-			.domain(pages.map( (d, i) => i*barWidth ))
+			.domain(services.map( (d, i) => i*barWidth ))
 			.rangeRoundBands([0, width], barPad);
 
 		//pagesCount.forEach(count => drawDocIcon(count));
@@ -169,8 +153,22 @@
 		}
 	}
 
+	/**
+	 * Turns response from promise into visualization of a bar chart.
+	 *
+	 * @param {Promise} 
+	 * @param {string} of url type ('terms' or 'privacy' - determined in input data)
+	 */
+	function promise2visualize(promise, type){
+		promise.then(function(response){
+				visualizePages(response, type);
+			}, function(error){
+				errorMssg(error, true);
+			});
+	}
+
 	// array of objects with url links to various services
-	var pages = [
+	var services = [
 		{	name: 'Facebook', 
 			url_image: 'https://cdn4.iconfinder.com/data/icons/miu-square-shadow-social/60/facebook-square-shadow-social-media-128.png', 
 			url_terms: 'https://www.facebook.com/terms', 
@@ -206,12 +204,21 @@
 			url_terms: 'https://www.google.com/policies/terms', 
 			url_privacy: 'https://www.google.com/policies/privacy/'
 		}
-	];
+	];	
 
-	data2vis(pages);
+	var margin;
+	var width;
+	var height;
+	var svg;	
 
 	$(document).ready(function () {
-		setVis(pages, '#vis');
-	});	
-	
+		
+		setVis('#vis');
+		
+		visServices();
+		
+		data2vis(services);
+
+	});
+
 })(this, document);

@@ -37,8 +37,8 @@
 		function typePagesPromise( type ){
 			var typePromises = services.map( service => pagesContent( service['url_'+type] ) );
 
-			return Promise.all( typePromises ).then(function(response){ 
-					return response.map( pageContent => numberOfPages( pageContent ) );
+			return Promise.all( typePromises ).then( function( responses ){					
+					return responses.map( pageContent => numberOfPages( pageContent ) );
 				}, function( error ) {
 					errorMssg( error, true );
 				});
@@ -55,7 +55,7 @@
 				// but 'html' as 'table' var works for most cases, so it set as default
 				var table = 'html';
 				return $.get('http://query.yahooapis.com/v1/public/yql?q=select%20*%20from%20'+table+'%20where%20url%3D%27'+encodeURIComponent(page)+'%27&format=xml', 
-					function ( response, status ) {
+					function ( response, status ) {						
 						return response;
 				});
 			}
@@ -66,7 +66,7 @@
 			 * @param {string} content of a web page
 			 * @return {number} of standard pages (3000 characters per page)
 			 */
-			function numberOfPages( page ) {
+			function numberOfPages( page ) {				
 				return Math.round( $( page ).text().length/3000 );
 			}
 		}
@@ -96,7 +96,15 @@
 			.append( 'svg')
 				.attr( 'width', width )
 				.attr( 'height', height )
-				.style( 'border', '1px solid lightgrey' );		
+				.style( 'border', '1px solid lightgrey' );
+
+		// set attributes
+		barPad = 0.5;
+		barWidth = 40;
+
+		xScale = d3.scale.ordinal()
+			.domain( services.map( (d, i) => i*barWidth ) )
+			.rangeRoundBands( [0, width], barPad );	
 	}
 
 	/**
@@ -104,14 +112,7 @@
 	 *
 	 */
 	function visServices() {
-		var barPad = 0.5;
-		var barWidth = 40;
-
-		var xScale = d3.scale.ordinal()
-			.domain( services.map( (d, i) => i*barWidth ) )
-			.rangeRoundBands( [0, width], barPad );
-		
-		// generate the icons
+		// generate the icons of each service
 		var icons = svg.selectAll( '.icons' )
 			.data( services )
 			.enter()
@@ -131,17 +132,9 @@
 	 * @param {array} of numbers representing how long the content of web services have
 	 * @param {string} of url type ('terms' or 'privacy' - determined in input data)
 	 */
-	function visPages( type ){	
+	function visPages( type ){
 
-		var barPad = 0.5;
-		var barWidth = 40;
-
-		var xScale = d3.scale.ordinal()
-			.domain( services.map( (d, i) => i*barWidth ) )
-			.rangeRoundBands( [0, width], barPad );
-
-		//pagesCount.forEach(count => drawDocIcon(count));
-		drawDocIcon( 4 );
+		services.forEach( service => drawDocIcon( service['pages_'+type] ));		
 		
 		function drawDocIcon( count ) {
 			// icon of a document
@@ -151,7 +144,7 @@
 				.append( 'svg:image' )
 				.attr( 'class', 'fileIcons '+type )
 				.attr( 'xlink:href', 'https://cdn1.iconfinder.com/data/icons/hawcons/32/699044-icon-55-document-text-128.png' )
-				.attr( 'x', (d, i) => i*70 )
+				.attr( 'x', (d, i) => xScale(i*barWidth)+10 )
 				.attr( 'y', (d, i) => i*10 )
 				.attr( 'width', 50 )
 				.attr( 'height', 100 );
@@ -212,7 +205,11 @@
 	var margin;
 	var width;
 	var height;
-	var svg;	
+	var svg;
+
+	var xScale;
+	var barPad;
+	var barWidth;	
 
 	$( document ).ready(function () {
 		

@@ -134,9 +134,9 @@
 	 */
 	function visPages( type ){
 
-		services.forEach( service => drawDocIcon( service['pages_'+type] ));		
+		services.forEach( (service, serviceIndex) => drawDocIcon( service['pages_'+type], serviceIndex ));		
 		
-		function drawDocIcon( count ) {
+		function drawDocIcon( count, serviceIndex ) {
 			// icon of a document
 			svg.selectAll( '.'+type+'.fileIcons' )
 				.data( d3.range( count ) )
@@ -144,7 +144,7 @@
 				.append( 'svg:image' )
 				.attr( 'class', 'fileIcons '+type )
 				.attr( 'xlink:href', 'https://cdn1.iconfinder.com/data/icons/hawcons/32/699044-icon-55-document-text-128.png' )
-				.attr( 'x', (d, i) => xScale(i*barWidth)+10 )
+				.attr( 'x', (d, i) => xScale(serviceIndex*barWidth) )
 				.attr( 'y', (d, i) => i*10 )
 				.attr( 'width', 50 )
 				.attr( 'height', 100 );

@@ -1,0 +1,52 @@
+{
+  "services": [
+    {
+      "name": "Facebook",
+      "url_image": "https://cdn4.iconfinder.com/data/icons/miu-square-shadow-social/60/facebook-square-shadow-social-media-128.png",
+      "url_terms": "https://www.facebook.com/terms",
+      "url_privacy": "https://www.facebook.com/full_data_use_policy",
+      "pages_terms": "undefined",
+      "pages_privacy": "undefined",
+    },
+    {
+      "name": "LinkedIn",
+      "url_image": "https://cdn4.iconfinder.com/data/icons/miu-square-shadow-social/60/linkedin-square-shadow-social-media-128.png",
+      "url_terms": "https://www.linkedin.com/legal/user-agreement",
+      "url_privacy": "https://www.linkedin.com/legal/privacy-policy?trk=hb_ft_priv",
+      "pages_terms": "undefined",
+      "pages_privacy": "undefined",
+    },
+    {
+      "name": "Twitter",
+      "url_image": "https://cdn4.iconfinder.com/data/icons/miu-square-shadow-social/60/twitter-square-shadow-social-media-128.png",
+      "url_terms": "https://twitter.com/tos",
+      "url_privacy": "https://twitter.com/privacy",
+      "pages_terms": "undefined",
+      "pages_privacy": "undefined",
+    },
+    {
+      "name": "Tumblr",
+      "url_image": "https://cdn4.iconfinder.com/data/icons/miu-square-shadow-social/60/tumblr-square-shadow-social-media-128.png",
+      "url_terms": "https://www.tumblr.com/policy/en/terms-of-service",
+      "url_privacy": "https://www.tumblr.com/policy/en/privacy",
+      "pages_terms": "undefined",
+      "pages_privacy": "undefined",
+    },
+    {
+      "name": "Instagram",
+      "url_image": "https://cdn4.iconfinder.com/data/icons/miu-square-shadow-social/60/instagram-square-shadow-social-media-128.png",
+      "url_terms": "https://www.instagram.com/about/legal/terms",
+      "url_privacy": "https://www.instagram.com/about/legal/privacy/",
+      "pages_terms": "undefined",
+      "pages_privacy": "undefined",
+    },
+    {
+      "name": "Google",
+      "url_image": "https://cdn4.iconfinder.com/data/icons/miu-square-shadow-social/60/google_plus-square-shadow-social-media-128.png",
+      "url_terms": "https://www.google.com/policies/terms",
+      "url_privacy": "https://www.google.com/policies/privacy/",
+      "pages_terms": "undefined",
+      "pages_privacy": "undefined",
+    },
+  ]
+}
